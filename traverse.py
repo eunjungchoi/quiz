@@ -84,6 +84,7 @@ def _find_deepest_child(dic_tree):
     return (max_depth_child, max_depth)
 
 
+# 좀더 중급 버전 :
 #     def get_deep_child(key, value):
 #         if value == None:
 #             (child_key, child_depth) = (key, 1)    
@@ -96,22 +97,6 @@ def _find_deepest_child(dic_tree):
 #     return max_result
 
 
-
-def find_deepest_child(dic_tree, level=0):
-    for el in dic_tree.values():
-        if isinstance(el, dict):
-            deepest_level = 0
-            deepest_child = ""
-    
-            for key, value in dic_tree.items():
-                if len(dic_tree):
-                    level +=1
-                    if level > deepest_level:
-                        deepest_level = level
-                        deepest = dic_tree
-                        find_deepest_child(value, level)
-                else: continue 
-            return deepest_child
 
 
 	    # def find_nodes_that_contains_more_than_three_children(unix_tree):
