@@ -96,6 +96,22 @@ def _find_deepest_child(dic_tree):
 #     max_result = max(results, key=lambda (child_key, child_depth): child_depth)
 #     return max_result
 
+def find_nodes_that_contains_more_than_three_children(dic_tree):
+    parents_of_multi_child = []
+    
+    for child_key, subtree in dic_tree.items():
+        if subtree == None:
+            continue
+            
+        # check direct children
+        if len(subtree) >= 3:
+            parents_of_multi_child.append(child_key)
+
+        # ask descendants of subtree
+        descendants3 = find_nodes_that_contains_more_than_three_children(subtree)
+        parents_of_multi_child.extend(descendants3)
+
+    return parents_of_multi_child
 
 
 
