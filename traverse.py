@@ -114,6 +114,17 @@ def find_nodes_that_contains_more_than_three_children(dic_tree):
     return parents_of_multi_child
 
 
+def count_of_all_distributions_of_linux(dic_tree):
+    if dic_tree == None:
+        return 0
+
+    counter = 0
+    for key, subtree in dic_tree.items():
+        subtree_count = count_of_all_distributions_of_linux(subtree)
+        counter += subtree_count + 1
+        
+    return counter
+
 
 	    # def find_nodes_that_contains_more_than_three_children(unix_tree):
 
