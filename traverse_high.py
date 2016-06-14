@@ -13,3 +13,7 @@ traverse
     max_result = max(results, key=lambda (child_key, child_depth): child_depth)
     return max_result
 
+
+
+
+#(child_key, child_depth) = _find_deepest_child(value) if value is not None else (key, 1)

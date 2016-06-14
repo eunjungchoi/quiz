@@ -79,9 +79,6 @@ def _find_deepest_child(dic_tree):
 		    (child_key, child_depth) = (key, 1)    
 		else:
 		    (child_key, child_depth) = _find_deepest_child(value)
-
-		
-		(child_key, child_depth) = _find_deepest_child(value) if value is not None else (key, 1)
 		
 		child_depth += 1
 
