@@ -8,6 +8,7 @@ class PythonTest(unittest.TestCase):
 	maxDiff = None
 
 	def test_traverse(self):
+	    
 	    unix_tree = {
 	        'Unix': {
 	            'PWB/Unix': {
@@ -47,54 +48,51 @@ class PythonTest(unittest.TestCase):
 	        }
 	    }
 
+	    self.assertEqual('OpenSolaris', find_deepest_child(unix_tree))
+	    self.assertSetEqual({'Unix', 'BSD', 'Linux'}, find_nodes_that_contains_more_than_three_children(unix_tree))
+	    self.assertEqual(7, count_of_all_distributions_of_linux(unix_tree['Linux']))
+
+
 # 가장 깊은 레벨의 child node 찾기 
 
 def find_deepest_child(dic_tree):
+    ''' 
+    아래 _find_deepest_child(dic_tree) 함수와 함께 사용된다.
+    _find_deepest_child 함수는 튜플을 반환한다. depth를 함께 재귀함수에 넣어 카운트하기 위해서다. 
+    문제의 해답은 deepest_child만 리턴해야 하기 때문에, 이를 처리하기 위한 함수를 따로 빼준다. 
+    '''
     result = _find_deepest_child(dic_tree)
     deepest_child, depth = result
     return deepest_child
 
 
 def _find_deepest_child(dic_tree):
-    ''' 트리 구조일 때, 전체 하위 노드 중 가장 depth가 깊은 자식노드의 이름과 depth level를 가져오는 것 '''
-    ''' 딕셔너리 타입의 트리가 들어올 때, 가장 depth가 큰 노드의 이름과 그 depth의 튜플을 리턴한다. 
-    
-    recursive하게 돈다.
-    입력을 None일 수 없다.
-    
-    '''
-    max_depth_child = None
-    max_depth       = -1
+	''' 
+	딕셔너리 타입의 트리가 들어올 때, 가장 depth가 큰 노드의 이름과 그 depth의 튜플을 리턴한다. 
+	recursive하게 돈다.
+	'''
+	max_depth_child = None
+	max_depth       = -1
 
-    for key, value in dic_tree.items():
-        #
-        if value == None:
-            (child_key, child_depth) = (key, 1)    
-        else:
-            (child_key, child_depth) = _find_deepest_child(value)
+	for key, value in dic_tree.items():
+		if value == None:
+		    (child_key, child_depth) = (key, 1)    
+		else:
+		    (child_key, child_depth) = _find_deepest_child(value)
 
-        #
-        (child_key, child_depth) = _find_deepest_child(value) if value is not None else (key, 1)
-        #
-        child_depth += 1
-        if child_depth > max_depth:
-            max_depth_child = child_key
-            max_depth       = child_depth
+		
+		(child_key, child_depth) = _find_deepest_child(value) if value is not None else (key, 1)
+		
+		child_depth += 1
 
-    return (max_depth_child, max_depth)
+		if child_depth > max_depth:
+			max_depth_child = child_key
+			max_depth = child_depth
+
+	return (max_depth_child, max_depth)
 
 
-# 좀더 중급 버전 :
-#     def get_deep_child(key, value):
-#         if value == None:
-#             (child_key, child_depth) = (key, 1)    
-#         else:
-#             (child_key, child_depth) = _find_deepest_child(value)
-#         return (child_key, child_depth)
-    
-#     results = [get_deep_child(k,v) for k,v in dic_tree.items()]
-#     max_result = max(results, key=lambda (child_key, child_depth): child_depth)
-#     return max_result
+# 자식 노드가 3개 이상인 노드 리스트 구하기
 
 def find_nodes_that_contains_more_than_three_children(dic_tree):
     parents_of_multi_child = []
@@ -103,18 +101,26 @@ def find_nodes_that_contains_more_than_three_children(dic_tree):
         if subtree == None:
             continue
             
-        # check direct children
         if len(subtree) >= 3:
             parents_of_multi_child.append(child_key)
 
-        # ask descendants of subtree
         descendants3 = find_nodes_that_contains_more_than_three_children(subtree)
         parents_of_multi_child.extend(descendants3)
 
-    return parents_of_multi_child
+    return set(parents_of_multi_child)
+
+
+# 'Linux'의 모든 자식 노드 수 구하기 
+
+# 함수를 호출할 때, argument에 unix_tree['Linux']라고 입력했을 때만 동작합니다. 
+# root node를 인풋값으로 넣었을 때 그 아래의 모든 자식 노드들이 나오게 짰습니다. 
+# unix_tree를 인자로 넣어서 Linux 노드를 한번 찾은 다음에, 그 자식노드를 짜게 하려다보니, 재귀함수를 도는 과정에서 조금 복잡해져서 
+# 이 문제는 아래와 같이 인자를 linux 노드부터 넣는다는 조건부로 풀었습니다. 
+# self.assertEqual 에 테스트하는 인수에도 unix_tree['Linux']를 세팅해두었습니다. 
 
 
 def count_of_all_distributions_of_linux(dic_tree):
+
     if dic_tree == None:
         return 0
 
@@ -125,16 +131,6 @@ def count_of_all_distributions_of_linux(dic_tree):
         
     return counter
 
-
-	    # def find_nodes_that_contains_more_than_three_children(unix_tree):
-
-	    # def count_of_all_distributions_of_linux(unix_tree): 
-
-	    # 아래의 unitest를 통과시킬 수 있도록, 위에 3가지 함수를 짜야하는데, 어렵군요. 재귀함수나 트리 순회 같은 걸 해야 할 것 같은 느낌인데...ㅠ
-
-	    self.assertEqual('OpenSolaris', find_deepest_child(unix_tree))
-	    self.assertSetEqual({'Unix', 'BSD', 'Linux'}, find_nodes_that_contains_more_than_three_children(unix_tree))
-	    self.assertEqual(7, count_of_all_distributions_of_linux(unix_tree))
 
 
 if __name__ == '__main__':
